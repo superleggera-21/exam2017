@@ -74,8 +74,12 @@ class Text(object):
         Example: an_instance_of_Text.create_moved_dict(2) would generate
         {'a': 'c', 'b': 'd', 'c':'e', ...}  
         '''
-        pass  # delete this line and replace with your code here
+        letters = {}
+        for i in range(26):
+            letters[chr(i+97)] = chr(97+(i+move) % 26)
+            letters[chr(i+65)] = chr(65+(i+move) % 26)
 
+        return letters
 
     ### YOU NEED TO MODIFY THIS METHOD ###
     def apply_move(self, move):
@@ -87,8 +91,15 @@ class Text(object):
         Returns: the text (string) in which every character is moved
              down the alphabet by the input move
         '''
-        pass  # delete this line and replace with your code here
-
+        newstr = ""
+        cipherdict = self.create_moved_dict(move)
+        plaintext = self.get_text()
+        for letter in plaintext:
+            if letter in cipherdict:
+                newstr += cipherdict[letter]
+            else:
+                newstr += letter
+        return newstr
 
 class PlainText(Text):
 
@@ -110,7 +121,10 @@ class PlainText(Text):
         Note: you must use the parent class constructor(__init__ function) 
         so less code is repeated
         '''
-        pass  # delete this line and replace with your code here
+        Text.__init__(self, text)
+        self.move = move
+        self.encrypting_dict = self.create_moved_dict(move)
+        self.encrypted_text = self.apply_move(move)
 
 
     ### YOU NEED TO MODIFY THIS METHOD ###
@@ -120,7 +134,7 @@ class PlainText(Text):
 
         Returns: self.move
         '''
-        pass  # delete this line and replace with your code here
+        return self.move
 
 
     ### YOU NEED TO MODIFY THIS METHOD ###
@@ -130,7 +144,7 @@ class PlainText(Text):
 
         Returns: a COPY of self.encrypting_dict
         '''
-        pass  # delete this line and replace with your code here
+        return self.encrypting_dict[:]
 
 
     ### YOU NEED TO MODIFY THIS METHOD ###
@@ -140,7 +154,7 @@ class PlainText(Text):
 
         Returns: self.encrypted_text
         '''
-        pass  # delete this line and replace with your code here
+        return self.encrypted_text
 
 
     ### YOU NEED TO MODIFY THIS METHOD ###
@@ -154,7 +168,8 @@ class PlainText(Text):
 
         Returns: nothing
         '''
-        pass  # delete this line and replace with your code here
+        self.move = move
+
 
 
 class CipherText(Text):
@@ -171,7 +186,8 @@ class CipherText(Text):
             self.text (string, determined by input text)
             self.valid_words (list, determined using helper function load_wordlist)
         '''
-        pass  # delete this line and replace with your code here
+        Text.__init__(self, text)
+        self.valid_words = self.get_valid_words()
 
 
     ### YOU NEED TO MODIFY THIS METHOD ###
@@ -189,9 +205,27 @@ class CipherText(Text):
         test case in main function below.
 
         '''
-        pass  # delete this line and replace with your code here
+        wordlist = self.valid_words
+        match = 0
+        s = 0
+        for i in range(26):
+            result = self.apply_move(i)
+            matchcount = 0
+            for word in result.split():
+                if is_a_valid_word(wordlist, word):
+                    matchcount += 1
+            if matchcount > match:
+                match = matchcount
+                s = i
+
+        return (s, self.apply_move(s))
 
 
+
+
+# test = Text("test")
+# print(test.create_moved_dict(3))
+# print(test.apply_move(3))
 
 ### DO NOT MODIFY THIS FUNCTION ###
 def decrypt_joke():
